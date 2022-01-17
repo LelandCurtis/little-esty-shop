@@ -12,4 +12,14 @@ RSpec.describe 'discount show page' do
     expect(page).to have_content("Quantity Threshold: 12")
     expect(page).to have_content("Merchant Name: #{merchant.name}")
   end
+
+  it "has a link to the edit form page" do
+    merchant = create(:merchant)
+    discount_1 = create(:discount, merchant: merchant, quantity: 12, discount: 10)
+
+    visit merchant_discount_path(merchant, discount_1)
+
+    click_button "Edit Bulk Discount"
+    expect(current_path).to eq("/merchants/#{merchant.id}/discounts/#{discount.id}/edit")
+  end
 end

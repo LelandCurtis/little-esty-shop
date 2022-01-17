@@ -3,8 +3,8 @@ require 'rails_helper'
 RSpec.describe 'merchant discount edit form page' do
   it "has a form to edit a discount that is prepolulated with existing values and redirects to bulk discount index page" do
     merchant = create(:merchant)
-    discount = create(:discount, quantity: 14, :discount: 6)
-    visit merchant_discount_path(merchant, discount)
+    discount = create(:discount, quantity: 14, discount: 6)
+    visit "/merchants/#{merchant.id}/discounts/#{discount.id}/edit"
 
     within "div.edit_discount" do
       expect(page).to have_content("Percent Discount: 6%")
@@ -25,7 +25,7 @@ RSpec.describe 'merchant discount edit form page' do
 
   it "redirects to edit page and displays error message if edit fails" do
     merchant = create(:merchant)
-    discount = create(:discount, quantity: 14, :discount: 6)
+    discount = create(:discount, quantity: 14, discount: 6)
     visit merchant_discount_path(merchant, discount)
 
     within "div.edit_discount" do
