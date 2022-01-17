@@ -20,3 +20,6 @@
 
 <h2>Total Revenue</h2>
 <h4><%= money_honey(@invoice.revenue_by_merchant(@merchant)) %></h4>
+
+<h2>Total Discounted Revenue</h2>
+<h4><%= money_honey(@invoice.discounted_revenue_by_merchant(@merchant)) %></h4>
