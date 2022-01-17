@@ -7,7 +7,7 @@ RSpec.describe 'discount show page' do
 
     visit merchant_discount_path(discount_1)
 
-    expect(page).to have_content("Discount ID: #{discount_1.id}")
+    expect(page).to have_content("Discount ##{discount_1.id}")
     expect(page).to have_content("Discount Percentage: 10%")
     expect(page).to have_content("Quantity Threshold: 12")
   end
