@@ -20,4 +20,14 @@ RSpec.describe 'merchant_discount index page' do
       expect(page).to have_content("Quantity Threshold: 12")
     end
   end
+
+  it "has a link to create a new discount" do
+    merchant = create(:merchant)
+
+    visit visit "/merchants/#{merchant.id}/discounts"
+
+    click_link "Create New Bulk Discount"
+
+    expect(current_path).to eq("/merchants/#{merchant.id}/discounts/new")
+  end
 end
