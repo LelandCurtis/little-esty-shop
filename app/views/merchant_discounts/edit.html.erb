@@ -1,0 +1,14 @@
+<div class="edit_discount">
+  <fieldset>
+    <legend>Edit Discount</legend>
+    <%= form_with model: [@merchant, @discount], local: true do |f| %>
+      <%= f.label :discount, "Percent Discount:" %>
+      <%= f.number_field :discount %>
+      <%= f.label :quantity, "Quantity Threshold:" %>
+      <%= f.number_field :quantity %>
+      <%= f.label :merchant_id, "Merchant ID:" %>
+      <%= f.number_field :merchant_id %>
+      <%= f.submit value: "Update Bulk Discount"%>
+    <% end %>
+  </fieldset>
+</div>
