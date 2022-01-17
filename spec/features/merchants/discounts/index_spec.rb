@@ -44,4 +44,17 @@ RSpec.describe 'merchant_discount index page' do
 
     expect(current_path).to eq("/merchants/#{merchant.id}/discounts/new")
   end
+
+  it "has a link to delete each discount" do
+    merchant = create(:merchant)
+    discount_1 = create(:discount, merchant: merchant, quantity: 10, discount: 10)
+
+    visit "/merchants/#{merchant.id}/discounts"
+
+    within "div.discount_#{discount_1.id}" do
+      click_button "Delete Discount ##{discount_1.id}"
+      expect(current_path).to eq("/merchants/#{merchant.id}/discounts")
+    end
+    expect(page).not have_content("Discount ##{discount_1.id}")
+  end
 end
