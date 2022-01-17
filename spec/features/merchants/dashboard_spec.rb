@@ -21,6 +21,13 @@ RSpec.describe 'merchant dashboard' do
     expect(current_path).to eq("/merchants/#{merchant.id}/items")
   end
 
+  it "has a link to the merchant discounts section" do
+    merchant = create(:merchant)
+    visit "/merchants/#{merchant.id}/dashboard"
+    click_link "Discounts"
+    expect(current_path).to eq("/merchants/#{merchant.id}/discounts")
+  end
+
   describe 'top 5 customers section' do
     it "has the names of the top 5 customers with largest number of completed transactions" do
       merchant = create(:merchant)
