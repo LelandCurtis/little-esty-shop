@@ -1,12 +1,13 @@
 Rails.application.routes.draw do
   resources :merchants do
     resources :items, controller: 'merchant_items'
+    resources :discounts, controller: 'merchant_discounts'
   end
 
   scope '/admin', as: 'admin' do
     resources :merchants, controller: 'admin_merchants'
   end
-  
+
   scope '/admin' do
     resources :invoices, controller: 'admin_invoices'
   end
