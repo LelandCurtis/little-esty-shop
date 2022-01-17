@@ -55,6 +55,6 @@ RSpec.describe 'merchant_discount index page' do
       click_button "Delete Discount ##{discount_1.id}"
       expect(current_path).to eq("/merchants/#{merchant.id}/discounts")
     end
-    expect(page).not have_content("Discount ##{discount_1.id}")
+    expect(page).to_not have_content("Discount ##{discount_1.id}")
   end
 end

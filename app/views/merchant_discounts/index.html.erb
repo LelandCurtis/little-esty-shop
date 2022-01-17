@@ -6,6 +6,9 @@
       <h3><%= link_to "Discount ##{discount.id}", merchant_discount_path(@merchant, discount) %></h3>
       <p><%= "Percent Discount: #{number_to_percentage(discount.discount, precision: 0)}" %></p>
       <p><%= "Quantity Threshold: #{discount.quantity}" %></p>
+      <%= form_with model: [@merchant, discount], method: :delete, local: true do |f| %>
+        <%= f.submit value = "Delete Discount ##{discount.id}" %>
+      <% end %>
     </div>
   <% end %>
 </div>
