@@ -22,7 +22,7 @@ RSpec.describe InvoiceItem, type: :model do
   end
 
   describe 'class methods' do
-      describe 'revenue' do
+    describe '.revenue' do
       it "multiplies unit_price and quantity for a collection of invoice_items and sums them only if they are associated with an invoice that has at least 1 successful transaction" do
         invoice_1 = create(:invoice)
         invoice_2 = create(:invoice)
@@ -50,6 +50,29 @@ RSpec.describe InvoiceItem, type: :model do
         # test for multiple invoices with successful transactions
         transaction_3 = create(:transaction, result: 0, invoice: invoice_2)
         expect(invoice_items.revenue).to eq(9000)
+      end
+    end
+
+    describe '.discounted_revenue' do
+      it 'reports discounted revenue from all items on a given invoice if there is at least 1 successful transaction' do
+        invoice = create(:invoice)
+        item_1 = create(:item_with_invoices, name: 'Toy', invoices: [invoice], invoice_item_unit_price: 10000, invoice_item_quantity: 2)
+        item_2 = create(:item_with_invoices, name: 'Boat', invoices: [invoice], invoice_item_unit_price: 15000, invoice_item_quantity: 5)
+        item_3 = create(:item_with_invoices, name: 'Car', invoices: [invoice], invoice_item_unit_price: 20000, invoice_item_quantity: 10)
+
+        discount_1 = create(:discount, merchant: merchant, quantity: 3, discount: 20)
+        discount_2 = create(:discount, merchant: merchant, quantity: 9, discount: 50)
+
+        #test for no transactions
+        expect(invoice.discounted_revenue).to eq(0)
+
+        # test that it doesn't count revenue with unsuccessful transactions
+        transaction_1 = create(:transaction, invoice: invoice, result: 1)
+        expect(invoice.discounted_revenue).to eq(0)
+
+        # test that it only counts revenue with successful transactions
+        transaction_2 = create(:transaction, invoice: invoice1, result: 0)
+        expect(invoice1.discounted_revenue).to eq(180000)
       end
     end
   end

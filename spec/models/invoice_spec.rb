@@ -66,6 +66,25 @@ RSpec.describe Invoice, type: :model do
       end
     end
 
+    describe '#discounted_revenue' do
+      it 'reports discounted revenue from all items on a given invoice if there is at least 1 successful transaction' do
+        invoice = create(:invoice)
+        item_1 = create(:item_with_invoices, name: 'Toy', invoices: [invoice], invoice_item_unit_price: 10000, invoice_item_quantity: 2)
+        item_2 = create(:item_with_invoices, name: 'Boat', invoices: [invoice], invoice_item_unit_price: 15000, invoice_item_quantity: 5)
+        item_3 = create(:item_with_invoices, name: 'Car', invoices: [invoice], invoice_item_unit_price: 20000, invoice_item_quantity: 10)
+
+        discount_1 = create(:discount, merchant: merchant, quantity: 3, discount: 20)
+        discount_2 = create(:discount, merchant: merchant, quantity: 9, discount: 50)
+
+        # test that it only counts revenue with successful transactions
+        transaction_1 = create(:transaction, invoice: invoice, result: 1)
+        expect(invoice.discounted_revenue).to eq(0)
+
+        transaction_2 = create(:transaction, invoice: invoice1, result: 0)
+        expect(invoice1.discounted_revenue).to eq(180000)
+      end
+    end
+
     describe '#revenue_by_merchant' do
       it "reports revenue associated with items that belong to a particular merchant that are on a particular invoice" do
         merchant_1 = create(:merchant)
