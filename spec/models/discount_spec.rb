@@ -7,5 +7,4 @@ RSpec.describe Discount, type: :model do
   it { should have_many(:invoices).through(:invoice_items) }
   it { should have_many(:customers).through(:invoices) }
   it { should have_many(:transactions).through(:invoices) }
-  it { should have_many(:discounts) }
 end
