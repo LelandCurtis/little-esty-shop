@@ -38,7 +38,7 @@ RSpec.describe Invoice, type: :model do
       end
     end
 
-    describe '#merhcant_invoice_items' do
+    describe '#merchant_invoice_items' do
       it 'organizes invoice items alphabetically by a given merchant' do
         merchant_1 = create(:merchant, name: 'Bob')
         invoice_1 = create(:invoice)
@@ -67,7 +67,7 @@ RSpec.describe Invoice, type: :model do
     end
 
     describe '#revenue_by_merchant' do
-      it "reports potential revenue associated with items that belong to a particular merchant that are on a particular invoice" do
+      it "reports revenue associated with items that belong to a particular merchant that are on a particular invoice" do
         merchant_1 = create(:merchant)
         merchant_2 = create(:merchant)
         invoice1 = create(:invoice)
@@ -83,6 +83,23 @@ RSpec.describe Invoice, type: :model do
 
         expect(invoice1.revenue_by_merchant(merchant_1)).to eq(45000)
         expect(invoice1.revenue_by_merchant(merchant_2)).to eq(100000)
+      end
+    end
+  end
+
+  describe 'class methods' do
+    describe '.potential revenue' do
+      it "reports the total discounted revenue for all items that belong to a particular merchant on an invoice " do
+        merchant = create(:merchant, name: "Bob Barker")
+        invoice = create(:invoice)
+        item_1 = create(:item_with_invoices, name: 'Toy', merchant: merchant, invoices: [invoice], invoice_item_unit_price: 10000, invoice_item_quantity: 2)
+        item_2 = create(:item_with_invoices, name: 'Boat', merchant: merchant, invoices: [invoice], invoice_item_unit_price: 15000, invoice_item_quantity: 5)
+        item_3 = create(:item_with_invoices, name: 'Car', merchant: merchant, invoices: [invoice], invoice_item_unit_price: 20000, invoice_item_quantity: 10)
+        transaction = create(:transaction, invoice: invoice, result: 0)
+        discount_1 = create(discount, merchant: merchant, quantity: 3, discount: 20)
+        discount_2 = create(discount, merchant: merchant, quantity: 9, discount: 50)
+
+        expect(invoice.discounted_revenue).to eq(180000)
       end
     end
   end
