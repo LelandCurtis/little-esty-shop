@@ -1,7 +1,7 @@
 require 'rails_helper'
 
 RSpec.describe 'merchant discount edit form page' do
-  it "has a form to edit a discount that is prepolulated with existing values and redirects to bulk discount index page" do
+  it "has a form to edit a discount that is prepolulated with existing values and redirects to bulk discount show page" do
     merchant = create(:merchant)
     discount = create(:discount, merchant: merchant, quantity: 14, discount: 6)
     visit "/merchants/#{merchant.id}/discounts/#{discount.id}/edit"
@@ -14,7 +14,7 @@ RSpec.describe 'merchant discount edit form page' do
       fill_in "Percent Discount:", with: 10
       fill_in "Quantity Threshold:", with: 12
       click_button "Update Bulk Discount"
-      expect(current_path).to eq("/merchants/#{merchant.id}/discounts")
+      expect(current_path).to eq("/merchants/#{merchant.id}/discounts/#{discount.id}")
     end
 
     visit "/merchants/#{merchant.id}/discounts"

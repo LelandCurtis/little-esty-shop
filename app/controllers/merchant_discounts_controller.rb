@@ -38,7 +38,7 @@ class MerchantDiscountsController < ApplicationController
 
     if discount.update(discount_params)
       flash[:notice] = "Discount #{discount.id} Successfully Updated"
-      redirect_to "/merchants/#{params[:merchant_id]}/discounts"
+      redirect_to "/merchants/#{params[:merchant_id]}/discounts/#{params[:id]}"
     else
       flash[:alert] = "Error: #{discount.errors.full_messages.to_sentence}"
       redirect_to "/merchants/#{params[:merchant_id]}/discounts/#{params[:id]}/edit"
