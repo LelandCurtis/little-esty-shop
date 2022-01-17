@@ -5,6 +5,11 @@ class MerchantDiscountsController < ApplicationController
     @discounts = @merchant.discounts
   end
 
+  def show
+    @merchant = Merchant.find(params[:merchant_id])
+    @discount = Discount.find(params[:id])
+  end
+
   def new
     @merchant = Merchant.find(params[:merchant_id])
     @discount = Discount.create()
@@ -19,6 +24,18 @@ class MerchantDiscountsController < ApplicationController
     else
       flash[:alert] = "Error: #{discount.errors.full_messages.to_sentence}"
       redirect_to "/merchants/#{params[:merchant_id]}/discounts/new"
+    end
+  end
+
+  def destroy
+    merchant = Merchant.find(params[:merchant_id])
+    discount = Discount.find(params[:id])
+    if discount.delete
+      flash[:notice] = "Discount Deleted"
+      redirect_to "/merchants/#{params[:merchant_id]}/discounts"
+    else
+      flash[:alert] = "Error: #{discount.errors.full_messages.to_sentence}"
+      redirect_to "/merchants/#{params[:merchant_id]}/discounts"
     end
   end
 

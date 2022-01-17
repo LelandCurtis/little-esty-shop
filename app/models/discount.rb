@@ -7,5 +7,5 @@ class Discount < ApplicationRecord
   has_many :transactions, through: :invoices
 
   validates :quantity, presence: true, numericality: { greater_than: 0 }
-  validates :discount, presence: true, numericality: { greater_than: 0 }
+  validates :discount, presence: true, numericality: { greater_than: 0, less_than_or_equal_to: 100 }
 end

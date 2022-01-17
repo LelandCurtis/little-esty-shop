@@ -1,11 +1,14 @@
-<h1><%= "Merchant #{@merchant.id}'s Bulk Discounts" %></h1>
+<h1><%= "#{@merchant.name}'s Bulk Discounts" %></h1>
 <p><%= link_to "Create New Bulk Discount", "/merchants/#{@merchant.id}/discounts/new" %></p>
 <div class="discounts">
   <% @discounts.each do |discount| %>
     <div class=<%= "discount_#{discount.id}" %>>
-      <h3><%= "Discount ##{discount.id}" %></h3>
+      <h3><%= link_to "Discount ##{discount.id}", merchant_discount_path(@merchant, discount) %></h3>
       <p><%= "Percent Discount: #{number_to_percentage(discount.discount, precision: 0)}" %></p>
       <p><%= "Quantity Threshold: #{discount.quantity}" %></p>
+      <%= form_with model: [@merchant, discount], method: :delete, local: true do |f| %>
+        <%= f.submit value = "Delete Discount ##{discount.id}" %>
+      <% end %>
     </div>
   <% end %>
 </div>
