@@ -3,6 +3,8 @@ require 'rails_helper'
 RSpec.describe 'merchant_discount index page' do
   it "lists all discounts, including thier percentage discounts and quantity thresholds" do
     merchant = create(:merchant)
+    visit "/merchants/#{merchant.id}/discounts"
+    
     discount_1 = create(:discount, merchant: merchant, quantity: 10, discount: 10)
     discount_2 = create(:discount, merchant: merchant, quantity: 12, discount: 15)
 
