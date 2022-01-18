@@ -48,8 +48,11 @@ class Item < ApplicationRecord
     .first.to_json
 
     hash = JSON.parse(json)
-    discount = Discount.find(hash['discounts_id'])
-
+    if hash
+      return Discount.find(hash['discounts_id'])
+    else
+      return nil
+    end
   end
 
 end
