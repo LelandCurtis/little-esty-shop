@@ -33,7 +33,7 @@ RSpec.describe 'The Admin Dashboard page' do
     expect('Bob Smith').to appear_before('Charlie Rey')
     expect('Charlie Rey').to appear_before('John Charles')
     expect('John Charles').to appear_before('Zach Doe')
-    
+
     expect(page).to have_content("Abe McConnel with 8 completed transactions")
     expect(page).to have_content("Zach Doe with 1 completed transactions")
   end
@@ -45,9 +45,9 @@ RSpec.describe 'The Admin Dashboard page' do
     visit "/admin"
 
     expect(page).to have_content("Incomplete Invoices")
-    expect(page).to have_content(invoice_1.id)
-    expect(page).to have_link(invoice_2.id)
-    expect(page).to_not have_content(invoice_3.id)
+    expect(page).to have_content("Invoice: #{invoice_1.id}")
+    expect(page).to have_link("Invoice: #{invoice_2.id}")
+    expect(page).to_not have_content("Invoice: #{invoice_3.id}")
   end
 
   it 'shows the created at dates in order of oldest to newest' do
@@ -57,7 +57,7 @@ RSpec.describe 'The Admin Dashboard page' do
     invoice_4 = create(:invoice, created_at: "2022-01-03")
 
     visit "/admin"
-    
+
     expect("Incomplete Invoices").to appear_before("Monday, January 03, 2022")
     expect("Monday, January 03, 2022").to appear_before("Tuesday, January 04, 2022")
     expect("Tuesday, January 04, 2022").to appear_before("Wednesday, January 05, 2022")
