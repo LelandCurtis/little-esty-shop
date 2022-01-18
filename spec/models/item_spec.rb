@@ -119,6 +119,21 @@ RSpec.describe Item, type: :model do
           expect(invoice_item.item.best_discount).to eq(discount_2)
         end
       end
+      
+      it "returns nil if no discount qualifies" do
+        merchant = create(:merchant)
+        invoice = create(:invoice)
+        item_1 = create(:item, merchant: merchant)
+        invoice_item_1 = create(:invoice_item, quantity: 4, unit_price: 10000, item: item_1, invoice: invoice)
+        transaction_1 = create(:transaction, invoice: invoice, result: 0)
+
+        expect(item_1.best_discount).to eq(nil)
+
+        discount_1 = create(:discount, merchant: merchant, quantity: 5, discount: 20)
+        discount_2 = create(:discount, merchant: merchant, quantity: 6, discount: 50)
+
+        expect(item_1.best_discount).to eq(nil)
+      end
     end
   end
 end
