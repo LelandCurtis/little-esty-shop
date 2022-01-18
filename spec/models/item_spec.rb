@@ -119,7 +119,7 @@ RSpec.describe Item, type: :model do
           expect(invoice_item.item.best_discount).to eq(discount_2)
         end
       end
-      
+
       it "returns nil if no discount qualifies" do
         merchant = create(:merchant)
         invoice = create(:invoice)
@@ -133,6 +133,23 @@ RSpec.describe Item, type: :model do
         discount_2 = create(:discount, merchant: merchant, quantity: 6, discount: 50)
 
         expect(item_1.best_discount).to eq(nil)
+      end
+    end
+
+    describe '#best_discount_id' do
+      it "formats the best_discount for the view page and returns none is none are avialable" do
+        merchant = create(:merchant)
+        invoice = create(:invoice)
+        item_1 = create(:item, merchant: merchant)
+        invoice_item_1 = create(:invoice_item, quantity: 6, unit_price: 10000, item: item_1, invoice: invoice)
+        transaction_1 = create(:transaction, invoice: invoice, result: 0)
+
+        expect(item_1.best_discount_id).to eq("None")
+
+        discount_1 = create(:discount, merchant: merchant, quantity: 5, discount: 20)
+        discount_2 = create(:discount, merchant: merchant, quantity: 9, discount: 50)
+
+        expect(item_1.best_discount_id).to eq("#{discount_2.id}")
       end
     end
   end
