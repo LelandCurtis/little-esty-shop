@@ -55,4 +55,13 @@ class Item < ApplicationRecord
     end
   end
 
+  def best_discount_id
+    discount = best_discount
+    if discount
+      return "#{discount.id}"
+    else
+      return "None"
+    end
+  end
+
 end

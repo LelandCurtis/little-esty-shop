@@ -146,8 +146,9 @@ RSpec.describe Item, type: :model do
 
         expect(item_1.best_discount_id).to eq("None")
 
-        discount_1 = create(:discount, merchant: merchant, quantity: 5, discount: 20)
-        discount_2 = create(:discount, merchant: merchant, quantity: 9, discount: 50)
+        discount_1 = create(:discount, merchant: merchant, quantity: 2, discount: 10)
+        discount_2 = create(:discount, merchant: merchant, quantity: 5, discount: 20)
+        discount_3 = create(:discount, merchant: merchant, quantity: 9, discount: 50)
 
         expect(item_1.best_discount_id).to eq("#{discount_2.id}")
       end
