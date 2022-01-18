@@ -36,4 +36,20 @@ class Item < ApplicationRecord
     .order(:revenue)
     .first.created_at
   end
+
+  def best_discount
+    json = invoice_items.joins(:discounts)
+    .group("invoice_items.item_id", "discounts.id")
+    .select('invoice_items.item_id', 'discounts.id AS discounts_ID', 'discounts.quantity',
+      'SUM(((discounts.discount) * invoice_items.unit_price * invoice_items.quantity) / 100) AS total_revenue_discount',
+      'SUM(invoice_items.quantity) AS total_item_quantity')
+    .having('discounts.quantity <= SUM(invoice_items.quantity)')
+    .order(total_revenue_discount: :desc)
+    .first.to_json
+
+    hash = JSON.parse(json)
+    discount = Discount.find(hash['discounts_id'])
+
+  end
+
 end
