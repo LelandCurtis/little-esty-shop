@@ -22,7 +22,7 @@ RSpec.describe InvoiceItem, type: :model do
   end
 
   describe 'class methods' do
-      describe 'revenue' do
+    describe '.revenue' do
       it "multiplies unit_price and quantity for a collection of invoice_items and sums them only if they are associated with an invoice that has at least 1 successful transaction" do
         invoice_1 = create(:invoice)
         invoice_2 = create(:invoice)
@@ -50,6 +50,158 @@ RSpec.describe InvoiceItem, type: :model do
         # test for multiple invoices with successful transactions
         transaction_3 = create(:transaction, result: 0, invoice: invoice_2)
         expect(invoice_items.revenue).to eq(9000)
+      end
+    end
+
+    describe '.revenue_discount' do
+      it 'reports revenue discount from all items on a given invoice if there is at least 1 successful transaction' do
+        merchant = create(:merchant)
+        invoice = create(:invoice)
+        item_1 = create(:item, merchant: merchant)
+        invoice_item_1 = create(:invoice_item, quantity: 1, unit_price: 10000, item: item_1, invoice: invoice)
+
+        # edge case: no discounts should return 0
+        transaction_2 = create(:transaction, invoice: invoice, result: 0)
+        expect(InvoiceItem.revenue_discount).to eq(0)
+
+        discount_1 = create(:discount, merchant: merchant, quantity: 3, discount: 20)
+        discount_2 = create(:discount, merchant: merchant, quantity: 5, discount: 50)
+
+        # test that it returns 0 if no discounts apply
+        expect(InvoiceItem.revenue_discount).to eq(0)
+
+        # test that it finds the best discount.
+        invoice_item_2 = create(:invoice_item, quantity: 2, unit_price: 10000, item: item_1, invoice: invoice)
+        expect(InvoiceItem.revenue_discount).to eq(6000)
+
+        # test that it finds the best discount. This will increase quantity to qualify for better discount
+        invoice_item_3 = create(:invoice_item, quantity: 2, unit_price: 10000, item: item_1, invoice: invoice)
+        expect(InvoiceItem.revenue_discount).to eq(25000)
+
+        #test that it finds the best discount per item and sums across multiple items.
+        item_2 = create(:item, merchant: merchant)
+        invoice_item_2 = create(:invoice_item, quantity: 1, unit_price: 10000, item: item_2, invoice: invoice)
+        expect(InvoiceItem.revenue_discount).to eq(25000)
+
+        invoice_item_3 = create(:invoice_item, quantity: 2, unit_price: 10000, item: item_2, invoice: invoice)
+        expect(InvoiceItem.revenue_discount).to eq(31000)
+
+        # test that it picks up the best discount for both items
+        invoice_item_3 = create(:invoice_item, quantity: 3, unit_price: 10000, item: item_2, invoice: invoice)
+        expect(InvoiceItem.revenue_discount).to eq(55000)
+      end
+    end
+
+    describe '.revenue_discount_by_merchant_invoice(merchant, invoice)' do
+      it 'reports revenue discount from all items on a given invoice if there is at least 1 successful transaction' do
+        merchant = create(:merchant)
+        invoice = create(:invoice)
+        item_1 = create(:item, merchant: merchant)
+        invoice_item_1 = create(:invoice_item, quantity: 1, unit_price: 10000, item: item_1, invoice: invoice)
+
+        # edge case: no discounts should return 0
+        transaction_2 = create(:transaction, invoice: invoice, result: 0)
+        expect(InvoiceItem.revenue_discount_by_merchant_invoice(merchant, invoice)).to eq(0)
+
+        discount_1 = create(:discount, merchant: merchant, quantity: 3, discount: 20)
+        discount_2 = create(:discount, merchant: merchant, quantity: 5, discount: 50)
+
+        # test that it returns 0 if no discounts apply
+        expect(InvoiceItem.revenue_discount_by_merchant_invoice(merchant, invoice)).to eq(0)
+
+        # test that it finds the best discount.
+        invoice_item_2 = create(:invoice_item, quantity: 2, unit_price: 10000, item: item_1, invoice: invoice)
+        expect(InvoiceItem.revenue_discount_by_merchant_invoice(merchant, invoice)).to eq(6000)
+
+        # test that it finds the best discount. This will increase quantity to qualify for better discount
+        invoice_item_3 = create(:invoice_item, quantity: 2, unit_price: 10000, item: item_1, invoice: invoice)
+        expect(InvoiceItem.revenue_discount_by_merchant_invoice(merchant, invoice)).to eq(25000)
+
+        #test that it finds the best discount per item and sums across multiple items.
+        item_2 = create(:item, merchant: merchant)
+        invoice_item_2 = create(:invoice_item, quantity: 1, unit_price: 10000, item: item_2, invoice: invoice)
+        expect(InvoiceItem.revenue_discount_by_merchant_invoice(merchant, invoice)).to eq(25000)
+
+        invoice_item_3 = create(:invoice_item, quantity: 2, unit_price: 10000, item: item_2, invoice: invoice)
+        expect(InvoiceItem.revenue_discount_by_merchant_invoice(merchant, invoice)).to eq(31000)
+
+        # test that it picks up the best discount for both items
+        invoice_item_3 = create(:invoice_item, quantity: 3, unit_price: 10000, item: item_2, invoice: invoice)
+        expect(InvoiceItem.revenue_discount_by_merchant_invoice(merchant, invoice)).to eq(55000)
+      end
+    end
+
+    describe '.discounted_revenue' do
+      it 'reports discounted revenue from all items on a given invoice if there is at least 1 successful transaction' do
+        merchant = create(:merchant)
+        invoice = create(:invoice)
+        item_1 = create(:item, merchant: merchant)
+        invoice_item_1 = create(:invoice_item, quantity: 1, unit_price: 10000, item: item_1, invoice: invoice)
+
+        # edge case: no discounts should return full revenue
+        transaction_2 = create(:transaction, invoice: invoice, result: 0)
+        expect(InvoiceItem.discounted_revenue).to eq(10000)
+
+        discount_1 = create(:discount, merchant: merchant, quantity: 3, discount: 20)
+        discount_2 = create(:discount, merchant: merchant, quantity: 5, discount: 50)
+
+        # test that it returns full revenue if no discounts apply
+        expect(InvoiceItem.discounted_revenue).to eq(10000)
+
+        # test that it finds the best discount.
+        invoice_item_2 = create(:invoice_item, quantity: 2, unit_price: 10000, item: item_1, invoice: invoice)
+        expect(InvoiceItem.discounted_revenue).to eq(24000)
+
+        # test that it finds the best discount. This will increase quantity to qualify for better discount
+        invoice_item_3 = create(:invoice_item, quantity: 2, unit_price: 10000, item: item_1, invoice: invoice)
+        expect(InvoiceItem.discounted_revenue).to eq(25000)
+
+        #test that it finds the best discount per item and sums across multiple items.
+        item_2 = create(:item, merchant: merchant)
+        invoice_item_2 = create(:invoice_item, quantity: 1, unit_price: 10000, item: item_2, invoice: invoice)
+        invoice_item_3 = create(:invoice_item, quantity: 2, unit_price: 10000, item: item_2, invoice: invoice)
+        expect(InvoiceItem.discounted_revenue).to eq(49000)
+
+        # test that it picks up the best discount for both items
+        invoice_item_3 = create(:invoice_item, quantity: 3, unit_price: 10000, item: item_2, invoice: invoice)
+        expect(InvoiceItem.discounted_revenue).to eq(55000)
+      end
+    end
+
+    describe '.discounted_revenue_by_merchant_invoice' do
+      it 'reports discounted revenue from all items on a given invoice if there is at least 1 successful transaction' do
+        merchant = create(:merchant)
+        invoice = create(:invoice)
+        item_1 = create(:item, merchant: merchant)
+        invoice_item_1 = create(:invoice_item, quantity: 1, unit_price: 10000, item: item_1, invoice: invoice)
+
+        # edge case: no discounts should return full revenue
+        transaction_2 = create(:transaction, invoice: invoice, result: 0)
+        expect(InvoiceItem.discounted_revenue_by_merchant_invoice(merchant, invoice)).to eq(10000)
+
+        discount_1 = create(:discount, merchant: merchant, quantity: 3, discount: 20)
+        discount_2 = create(:discount, merchant: merchant, quantity: 5, discount: 50)
+
+        # test that it returns full revenue if no discounts apply
+        expect(InvoiceItem.discounted_revenue_by_merchant_invoice(merchant, invoice)).to eq(10000)
+
+        # test that it finds the best discount.
+        invoice_item_2 = create(:invoice_item, quantity: 2, unit_price: 10000, item: item_1, invoice: invoice)
+        expect(InvoiceItem.discounted_revenue_by_merchant_invoice(merchant, invoice)).to eq(24000)
+
+        # test that it finds the best discount. This will increase quantity to qualify for better discount
+        invoice_item_3 = create(:invoice_item, quantity: 2, unit_price: 10000, item: item_1, invoice: invoice)
+        expect(InvoiceItem.discounted_revenue_by_merchant_invoice(merchant, invoice)).to eq(25000)
+
+        #test that it finds the best discount per item and sums across multiple items.
+        item_2 = create(:item, merchant: merchant)
+        invoice_item_2 = create(:invoice_item, quantity: 1, unit_price: 10000, item: item_2, invoice: invoice)
+        invoice_item_3 = create(:invoice_item, quantity: 2, unit_price: 10000, item: item_2, invoice: invoice)
+        expect(InvoiceItem.discounted_revenue_by_merchant_invoice(merchant, invoice)).to eq(49000)
+
+        # test that it picks up the best discount for both items
+        invoice_item_3 = create(:invoice_item, quantity: 3, unit_price: 10000, item: item_2, invoice: invoice)
+        expect(InvoiceItem.discounted_revenue_by_merchant_invoice(merchant, invoice)).to eq(55000)
       end
     end
   end

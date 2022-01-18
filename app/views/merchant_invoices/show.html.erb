@@ -4,6 +4,12 @@
   <p>Created On: <%=@invoice.created_at.strftime("%A, %B %d, %Y")%></p>
   <p>Customer: <%=@invoice.customer_name%></p>
 
+  <h2>Total Revenue</h2>
+  <h4><%= money_honey(@invoice.revenue_by_merchant(@merchant)) %></h4>
+
+  <h2>Total Discounted Revenue</h2>
+  <h4><%= money_honey(@discounted_revenue) %></h4>
+  
 <h2><%=@invoice.id%>'s Items</h2>
 <%@invoice.merchant_invoice_items(@merchant).each do |invoice_item|%>
   <section id="invoice_<%= invoice_item.item_id%>">
@@ -17,6 +23,3 @@
       </div>
   </section>
 <%end%>
-
-<h2>Total Potential Revenue</h2>
-<h4><%= money_honey(@invoice.revenue_by_merchant(@merchant)) %></h4>

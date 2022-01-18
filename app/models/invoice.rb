@@ -27,4 +27,5 @@ class Invoice < ApplicationRecord
   def revenue_by_merchant(merchant)
     merchant_invoice_items(merchant).revenue
   end
+
 end

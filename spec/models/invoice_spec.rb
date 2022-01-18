@@ -38,7 +38,7 @@ RSpec.describe Invoice, type: :model do
       end
     end
 
-    describe '#merhcant_invoice_items' do
+    describe '#merchant_invoice_items' do
       it 'organizes invoice items alphabetically by a given merchant' do
         merchant_1 = create(:merchant, name: 'Bob')
         invoice_1 = create(:invoice)
@@ -67,7 +67,7 @@ RSpec.describe Invoice, type: :model do
     end
 
     describe '#revenue_by_merchant' do
-      it "reports potential revenue associated with items that belong to a particular merchant that are on a particular invoice" do
+      it "reports revenue associated with items that belong to a particular merchant that are on a particular invoice" do
         merchant_1 = create(:merchant)
         merchant_2 = create(:merchant)
         invoice1 = create(:invoice)
