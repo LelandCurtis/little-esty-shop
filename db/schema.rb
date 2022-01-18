@@ -79,20 +79,10 @@ ActiveRecord::Schema.define(version: 2022_01_17_052224) do
     t.index ["invoice_id"], name: "index_transactions_on_invoice_id"
   end
 
-  create_table "users", force: :cascade do |t|
-    t.string "username"
-    t.string "password_digest"
-    t.bigint "merchant_id"
-    t.datetime "created_at", null: false
-    t.datetime "updated_at", null: false
-    t.index ["merchant_id"], name: "index_users_on_merchant_id"
-  end
-
   add_foreign_key "discounts", "merchants"
   add_foreign_key "invoice_items", "invoices"
   add_foreign_key "invoice_items", "items"
   add_foreign_key "invoices", "customers"
   add_foreign_key "items", "merchants"
   add_foreign_key "transactions", "invoices"
-  add_foreign_key "users", "merchants"
 end

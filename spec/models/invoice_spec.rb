@@ -66,25 +66,6 @@ RSpec.describe Invoice, type: :model do
       end
     end
 
-    describe '#discounted_revenue' do
-      it 'reports discounted revenue from all items on a given invoice if there is at least 1 successful transaction' do
-        invoice = create(:invoice)
-        item_1 = create(:item_with_invoices, name: 'Toy', invoices: [invoice], invoice_item_unit_price: 10000, invoice_item_quantity: 2)
-        item_2 = create(:item_with_invoices, name: 'Boat', invoices: [invoice], invoice_item_unit_price: 15000, invoice_item_quantity: 5)
-        item_3 = create(:item_with_invoices, name: 'Car', invoices: [invoice], invoice_item_unit_price: 20000, invoice_item_quantity: 10)
-
-        discount_1 = create(:discount, merchant: merchant, quantity: 3, discount: 20)
-        discount_2 = create(:discount, merchant: merchant, quantity: 9, discount: 50)
-
-        # test that it only counts revenue with successful transactions
-        transaction_1 = create(:transaction, invoice: invoice, result: 1)
-        expect(invoice.discounted_revenue).to eq(0)
-
-        transaction_2 = create(:transaction, invoice: invoice1, result: 0)
-        expect(invoice1.discounted_revenue).to eq(180000)
-      end
-    end
-
     describe '#revenue_by_merchant' do
       it "reports revenue associated with items that belong to a particular merchant that are on a particular invoice" do
         merchant_1 = create(:merchant)
@@ -102,27 +83,6 @@ RSpec.describe Invoice, type: :model do
 
         expect(invoice1.revenue_by_merchant(merchant_1)).to eq(45000)
         expect(invoice1.revenue_by_merchant(merchant_2)).to eq(100000)
-      end
-    end
-
-    describe '#discounted_revenue_by_merchant' do
-      it "reports the total discounted revenue for all items that belong to a particular merchant on an invoice " do
-        merchant = create(:merchant, name: "Bob Barker")
-        invoice = create(:invoice)
-        item_1 = create(:item_with_invoices, name: 'Toy', merchant: merchant, invoices: [invoice], invoice_item_unit_price: 10000, invoice_item_quantity: 2)
-        item_2 = create(:item_with_invoices, name: 'Boat', merchant: merchant, invoices: [invoice], invoice_item_unit_price: 15000, invoice_item_quantity: 5)
-        item_3 = create(:item_with_invoices, name: 'Car', merchant: merchant, invoices: [invoice], invoice_item_unit_price: 20000, invoice_item_quantity: 10)
-        transaction = create(:transaction, invoice: invoice, result: 0)
-        discount_1 = create(:discount, merchant: merchant, quantity: 3, discount: 20)
-        discount_2 = create(:discount, merchant: merchant, quantity: 9, discount: 50)
-
-        # create another merchant with items to ensure this revenue is not included
-        merchant_2 = create(:merchant)
-        invoice_2 = create(:invoice, merchant: merchant_2)
-        item_4 = create(:item_with_invoices, name: 'Bean Bag', merchant: merchant_2, invoices: [invoice_2], invoice_item_unit_price: 10000, invoice_item_quantity: 2)
-        transaction_2 = create(:transaction, invoice: invoice_2, result: 0)
-
-        expect(invoice.discounted_revenue_by_merchant(merchant)).to eq(180000)
       end
     end
   end

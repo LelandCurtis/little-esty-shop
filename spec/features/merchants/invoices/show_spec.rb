@@ -124,10 +124,9 @@ RSpec.describe 'merchants invoice show page' do
     discount_2 = create(:discount, merchant: merchant, quantity: 9, discount: 50)
 
 
-    visit "/merchants/#{merchant1.id}/invoices/#{invoice1.id}"
+    visit "/merchants/#{merchant.id}/invoices/#{invoice.id}"
 
     expect(page).to have_content("Total Discounted Revenue")
     expect(page).to have_content("$1,800.00")
-  end
   end
 end
