@@ -46,6 +46,10 @@ RSpec.describe Merchant, type: :model do
       it "returns the top merchants ordered by revenue" do
         merchant_1 = create(:merchant_with_transactions, name: 'Zach', invoice_item_quantity: 3, invoice_item_unit_price: 10)
         merchant_2 = create(:merchant_with_transactions, name: 'Abe', invoice_item_quantity: 15, invoice_item_unit_price: 100000)
+
+        # test for too many
+        expect(Merchant.top_merchants(5)).to eq([merchant_2, merchant_1])
+
         merchant_3 = create(:merchant_with_transactions, name: 'Nobody', invoice_item_quantity: 3, invoice_item_unit_price: 1)
         merchant_4 = create(:merchant_with_transactions, name: 'Jenny', invoice_item_quantity: 3, invoice_item_unit_price: 100)
         merchant_5 = create(:merchant_with_transactions, name: 'Bob', invoice_item_quantity: 3, invoice_item_unit_price: 10000)
@@ -64,6 +68,9 @@ RSpec.describe Merchant, type: :model do
         # Test with valid transaction.
         new_items = create(:item_with_transactions, merchant: merchant_6, invoice_item_quantity: 15, invoice_item_unit_price: 100000, transaction_result: 0)
         expect(Merchant.top_merchants(2)).to eq([merchant_6, merchant_2])
+
+
+
       end
     end
   end
@@ -75,6 +82,9 @@ RSpec.describe Merchant, type: :model do
 
         customer_1 = create(:customer_with_transactions, merchant: merchant, transaction_result: 0, transaction_count: 6, first_name: 'Bob')
         customer_2 = create(:customer_with_transactions, merchant: merchant, transaction_result: 0, transaction_count: 3, first_name: 'John')
+
+        expect(merchant.top_customers(12)).to eq([customer_1, customer_2])
+
         customer_3 = create(:customer_with_transactions, merchant: merchant, transaction_result: 0, transaction_count: 8, first_name: 'Abe')
         customer_4 = create(:customer_with_transactions, merchant: merchant, transaction_result: 0, transaction_count: 1, first_name: 'Zach')
         customer_5 = create(:customer_with_transactions, merchant: merchant, transaction_result: 0, transaction_count: 4, first_name: 'Charlie')
@@ -114,10 +124,13 @@ RSpec.describe Merchant, type: :model do
     end
 
     describe 'popular_items' do
-      it "returns a list of items ordered by potential_reveneu" do
+      it "returns a list of items ordered by potential_revenue" do
         merchant = create(:merchant)
         item_1 = create(:item_with_transactions, merchant: merchant, name: "Toy", invoice_item_quantity: 4, invoice_item_unit_price: 1000)
         item_2 = create(:item_with_transactions, merchant: merchant, name: "Apple", invoice_item_quantity: 4, invoice_item_unit_price: 1000000)
+
+        expect(merchant.popular_items(5)).to eq([item_2, item_1])
+
         item_3 = create(:item_with_transactions, merchant: merchant, name: "Zebra", invoice_item_quantity: 4, invoice_item_unit_price: 100)
         item_4 = create(:item_with_transactions, merchant: merchant, name: "Bus", invoice_item_quantity: 4, invoice_item_unit_price: 100000)
         item_5 = create(:item_with_transactions, merchant: merchant, name: "Dog", invoice_item_quantity: 4, invoice_item_unit_price: 10000)
@@ -185,6 +198,27 @@ RSpec.describe Merchant, type: :model do
         new_items = create(:item_with_transactions, merchant: merchant_1, invoice_item_quantity: 15, invoice_item_unit_price: 100000, transaction_result: 0)
         expect(merchant_1.total_revenue).to eq(1800000)
       end
+    end
+  end
+
+  describe 'class methods' do
+    describe '.top_customers' do
+      it "returns the top customers regardless of merchant" do
+        merchant_1 = create(:merchant)
+        merchant_2 = create(:merchant)
+
+        customer_1 = create(:customer_with_transactions, merchant: merchant_1, transaction_result: 0, transaction_count: 6, first_name: 'Bob')
+        customer_2 = create(:customer_with_transactions, merchant: merchant_1, transaction_result: 0, transaction_count: 3, first_name: 'John')
+
+        expect(Merchant.top_customers(12)).to eq([customer_1, customer_2])
+
+        customer_3 = create(:customer_with_transactions, merchant: merchant_1, transaction_result: 0, transaction_count: 8, first_name: 'Abe')
+        customer_4 = create(:customer_with_transactions, merchant: merchant_2, transaction_result: 0, transaction_count: 1, first_name: 'Zach')
+        customer_5 = create(:customer_with_transactions, merchant: merchant_2, transaction_result: 0, transaction_count: 4, first_name: 'Charlie')
+
+        expect(Merchant.top_customers(5)).to eq([customer_3, customer_1, customer_5, customer_2, customer_4])
+      end
+
     end
   end
 end

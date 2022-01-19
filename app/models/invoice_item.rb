@@ -20,13 +20,6 @@ class InvoiceItem < ApplicationRecord
     .total_revenue
   end
 
-  def self.revenue_by_item(item)
-    joins(invoice: :transactions)
-    .where(item_id: item.id)
-    .merge(Transaction.successful)
-    .total_revenue
-  end
-
   def self.revenue_discount
     json = select('SUM(best_rev.best_revenue_discount) AS totaled_revenue_discount')
     .from(self.group('inner_query.item_id')

@@ -24,9 +24,9 @@ class Merchant < ApplicationRecord
   end
 
   def self.top_customers(customer_count = 5)
-    customers = Customer.all
-    if customer_count > customers.count
-      customer_count = customers.count
+    
+    if customer_count > Customer.all.count
+      customer_count = Customer.all.count
     end
 
     Customer.merge(Customer.successful_transactions_count)
