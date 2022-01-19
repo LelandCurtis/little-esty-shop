@@ -9,6 +9,9 @@
 <h2>Total Revenue</h2>
 <h4><%= money_honey(@invoice.revenue) %></h4>
 
+<h2>Total Discounted Revenue</h2>
+<h4><%= money_honey(InvoiceItem.discounted_revenue_by_invoice(@invoice)) %></h4>
+
 <h2><%=@invoice.id%>'s Items</h2>
 <%@invoice.invoice_items.each do |invoice_item| %>
   <section id="invoice_<%=invoice_item.id%>">
