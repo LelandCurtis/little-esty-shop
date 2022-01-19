@@ -12,3 +12,10 @@
     </div>
   <% end %>
 </div>
+
+<div class="upcomming_holidays">
+  <h3>Upcomming Holidays</h3>
+  <% @holidays.each do |holiday| %>
+    <p><%= "#{holiday.date}: #{holiday.name}" %></p>
+  <% end %>
+</div>

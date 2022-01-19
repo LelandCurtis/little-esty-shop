@@ -57,4 +57,19 @@ RSpec.describe 'merchant_discount index page' do
     end
     expect(page).to_not have_content("Discount ##{discount_1.id}")
   end
+
+  it "has an Upcomming Holidays section with the name and date of the next three holidays" do
+    merchant = create(:merchant)
+
+    visit "/merchants/#{merchant.id}/discounts"
+
+    upcomming_holidays = Holidays.new(3)
+
+    within "div.upcomming_holidays" do
+      upcomming_holidays.holidays.each do |holiday|
+        expect(page).to have_content(holiday.name)
+        expect(page).to have_content(holiday.date)
+      end
+    end
+  end
 end
