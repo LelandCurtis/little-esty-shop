@@ -129,4 +129,36 @@ RSpec.describe 'merchants invoice show page' do
     expect(page).to have_content("Total Discounted Revenue")
     expect(page).to have_content("$1,800.00")
   end
+
+  it "displays the discount that was applied to each item as a link" do
+    merchant = create(:merchant, name: "Bob Barker")
+    invoice = create(:invoice)
+    item_1 = create(:item_with_invoices, name: 'Toy', merchant: merchant, invoices: [invoice], invoice_item_unit_price: 10000, invoice_item_quantity: 2)
+    item_2 = create(:item_with_invoices, name: 'Boat', merchant: merchant, invoices: [invoice], invoice_item_unit_price: 15000, invoice_item_quantity: 5)
+    item_3 = create(:item_with_invoices, name: 'Car', merchant: merchant, invoices: [invoice], invoice_item_unit_price: 20000, invoice_item_quantity: 10)
+    transaction = create(:transaction, invoice: invoice, result: 0)
+    discount_1 = create(:discount, merchant: merchant, quantity: 3, discount: 20)
+    discount_2 = create(:discount, merchant: merchant, quantity: 9, discount: 50)
+
+
+    visit "/merchants/#{merchant.id}/invoices/#{invoice.id}"
+    save_and_open_page
+    within "div.item_#{item_1.id}_info" do
+      expect(page).to have_content("Discount Applied: None")
+    end
+
+    visit "/merchants/#{merchant.id}/invoices/#{invoice.id}"
+    within "div.item_#{item_2.id}_info" do
+      expect(page).to have_content("Discount Applied: #{discount_1.id}")
+      click_link "#{discount_1.id}"
+      expect(current_path).to eq("/merchants/#{merchant.id}/discounts/#{discount_1.id}")
+    end
+
+    visit "/merchants/#{merchant.id}/invoices/#{invoice.id}"
+    within "div.item_#{item_3.id}_info" do
+      expect(page).to have_content("Discount Applied: #{discount_2.id}")
+      click_link "#{discount_2.id}"
+      expect(current_path).to eq("/merchants/#{merchant.id}/discounts/#{discount_2.id}")
+    end
+  end
 end
