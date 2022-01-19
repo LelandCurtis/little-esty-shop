@@ -81,7 +81,7 @@ RSpec.describe 'Admin_Invoices Show Page' do
     end
   end
 
-  it 'calculates the potential revenue of the invoice' do
+  it 'calculates the revenue of the invoice' do
     merchant = create(:merchant)
     invoice = create(:invoice)
     item = create(:item_with_invoices, merchant: merchant, invoices: [invoice], invoice_item_unit_price: 3000, invoice_item_quantity: 8)
@@ -90,8 +90,36 @@ RSpec.describe 'Admin_Invoices Show Page' do
 
     visit "/admin/invoices/#{invoice.id}"
 
-    expect(page).to have_content("Total Potential Revenue")
+    expect(page).to have_content("Total Revenue")
     expect(page).to have_content("$440.00")
+  end
+
+  it 'calculates the discounted revenue of the invoice' do
+    merchant = create(:merchant)
+    invoice = create(:invoice)
+    transaction = create(:transaction, invoice: invoice, result: 0)
+
+    discount_1 = create(:discount, merchant: merchant, quantity: 3, discount: 20)
+    discount_2 = create(:discount, merchant: merchant, quantity: 5, discount: 50)
+
+    item_1 = create(:item, merchant: merchant)
+    invoice_item_1 = create(:invoice_item, quantity: 1, unit_price: 10000, item: item_1, invoice: invoice)
+    invoice_item_2 = create(:invoice_item, quantity: 2, unit_price: 10000, item: item_1, invoice: invoice)
+
+    item_2 = create(:item, merchant: merchant)
+    invoice_item_4 = create(:invoice_item, quantity: 1, unit_price: 10000, item: item_2, invoice: invoice)
+    invoice_item_5 = create(:invoice_item, quantity: 2, unit_price: 10000, item: item_2, invoice: invoice)
+    invoice_item_6 = create(:invoice_item, quantity: 3, unit_price: 10000, item: item_2, invoice: invoice)
+
+    # create invoice_items for a different invoice that should not show up
+    invoice_2 = create(:invoice)
+    item_1 = create(:item, merchant: merchant)
+    invoice_item_7 = create(:invoice_item, quantity: 10, unit_price: 1000000, item: item_1, invoice: invoice_2)
+
+    visit "/admin/invoices/#{invoice.id}"
+    
+    expect(page).to have_content("Total Discounted Revenue")
+    expect(page).to have_content("$540.00")
   end
 
   it 'displays invoice_items status and allows edits' do

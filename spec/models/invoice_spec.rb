@@ -53,7 +53,7 @@ RSpec.describe Invoice, type: :model do
     end
 
     describe '#revenue' do
-      it 'reports potential revenue from all items on a given invoice if there is at least 1 successful transaction' do
+      it 'reports revenue from all items on a given invoice if there is at least 1 successful transaction' do
         invoice1 = create(:invoice)
         item1 = create(:item_with_invoices, name: 'Toy', invoices: [invoice1], invoice_item_quantity: 3, invoice_item_unit_price: 15000)
         item2 = create(:item_with_invoices, name: 'Car', invoices: [invoice1], invoice_item_quantity: 5, invoice_item_unit_price: 20000)

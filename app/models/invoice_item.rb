@@ -59,11 +59,32 @@ class InvoiceItem < ApplicationRecord
     discount = hash['totaled_revenue_discount'].to_i
   end
 
+  def self.revenue_discount_by_invoice(invoice)
+
+    json = select('SUM(best_rev.best_revenue_discount) AS totaled_revenue_discount')
+    .from(self.group('inner_query.item_id')
+      .select('MAX(inner_query.total_revenue_discount) AS best_revenue_discount')
+      .from(self.joins(:transactions, :discounts).merge(Transaction.successful)
+        .where(invoice_id: invoice.id)
+        .group("invoice_items.item_id", "discounts.id", 'invoice_items.invoice_id', 'merchants.id')
+        .select('invoice_items.item_id', 'discounts.id', 'discounts.quantity', 'invoice_items.invoice_id', 'merchants.id',
+          'SUM(((discounts.discount) * invoice_items.unit_price * invoice_items.quantity) / 100) AS total_revenue_discount',
+          'SUM(invoice_items.quantity) AS total_item_quantity')
+        .having('discounts.quantity <= SUM(invoice_items.quantity)'), :inner_query), :best_rev).to_json
+
+    hash = JSON.parse(json)[0]
+    discount = hash['totaled_revenue_discount'].to_i
+  end
+
   def self.discounted_revenue
     self.revenue - self.revenue_discount
   end
 
   def self.discounted_revenue_by_merchant_invoice(merchant, invoice)
     invoice.revenue_by_merchant(merchant) - self.revenue_discount_by_merchant_invoice(merchant, invoice)
+  end
+
+  def self.discounted_revenue_by_invoice(invoice)
+    invoice.revenue - self.revenue_discount_by_invoice(invoice)
   end
 end
