@@ -341,7 +341,7 @@ RSpec.describe InvoiceItem, type: :model do
 
     describe '#item_name' do
       it "returns the name of its item" do
-        item = create(:item, name = 'Bob')
+        item = create(:item, name: 'Bob')
         invoice_item = create(:invoice_item, item: item)
 
         expect(invoice_item.item_name).to eq("Bob")
@@ -350,7 +350,7 @@ RSpec.describe InvoiceItem, type: :model do
 
     describe '#item_id' do
       it "returns the id of its item" do
-        item = create(:item, name = 'Bob')
+        item = create(:item, name: 'Bob')
         invoice_item = create(:invoice_item, item: item)
 
         expect(invoice_item.item_id).to eq(item.id)
