@@ -105,7 +105,6 @@ RSpec.describe 'Admin_Invoices Show Page' do
     invoice_item_1 = create(:invoice_item, quantity: 1, unit_price: 10000, item: item_1, invoice: invoice)
     invoice_item_2 = create(:invoice_item, quantity: 2, unit_price: 10000, item: item_1, invoice: invoice)
 
-
     item_2 = create(:item, merchant: merchant)
     invoice_item_4 = create(:invoice_item, quantity: 1, unit_price: 10000, item: item_2, invoice: invoice)
     invoice_item_5 = create(:invoice_item, quantity: 2, unit_price: 10000, item: item_2, invoice: invoice)
