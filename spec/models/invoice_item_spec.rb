@@ -169,7 +169,6 @@ RSpec.describe InvoiceItem, type: :model do
         #create items for another merchant and test that it picks up those properly.
 
         merchant_2 = create(:merchant)
-        invoice = create(:invoice)
         item_3 = create(:item, merchant: merchant_2)
         invoice_item_1 = create(:invoice_item, quantity: 1, unit_price: 10000, item: item_3, invoice: invoice)
 
@@ -181,17 +180,17 @@ RSpec.describe InvoiceItem, type: :model do
 
         # test that it finds the best discount.
         invoice_item_2 = create(:invoice_item, quantity: 3, unit_price: 10000, item: item_3, invoice: invoice)
-        expect(InvoiceItem.revenue_discount_by_invoice(invoice)).to eq(58000)
+        expect(InvoiceItem.revenue_discount_by_invoice(invoice)).to eq(59000)
 
         # test that it finds the best discount. This will increase quantity to qualify for better discount
         invoice_item_3 = create(:invoice_item, quantity: 5, unit_price: 10000, item: item_3, invoice: invoice)
         expect(InvoiceItem.revenue_discount_by_invoice(invoice)).to eq(91000)
 
         #test that it finds the best discount per item and sums across multiple items.
-        item_4 = create(:item, merchant: merchant)
+        item_4 = create(:item, merchant: merchant_2)
         invoice_item_2 = create(:invoice_item, quantity: 1, unit_price: 10000, item: item_4, invoice: invoice)
         invoice_item_3 = create(:invoice_item, quantity: 3, unit_price: 10000, item: item_4, invoice: invoice)
-        expect(InvoiceItem.revenue_discount_by_invoice(invoice)).to eq(94000)
+        expect(InvoiceItem.revenue_discount_by_invoice(invoice)).to eq(95000)
 
         # test that it picks up the best discount for both items
         invoice_item_3 = create(:invoice_item, quantity: 5, unit_price: 10000, item: item_4, invoice: invoice)
@@ -311,7 +310,6 @@ RSpec.describe InvoiceItem, type: :model do
         #create items for another merchant and test that it picks up those properly.
 
         merchant_2 = create(:merchant)
-        invoice = create(:invoice)
         item_3 = create(:item, merchant: merchant_2)
         invoice_item_1 = create(:invoice_item, quantity: 1, unit_price: 10000, item: item_3, invoice: invoice)
 
@@ -330,7 +328,7 @@ RSpec.describe InvoiceItem, type: :model do
         expect(InvoiceItem.discounted_revenue_by_invoice(invoice)).to eq(109000)
 
         #test that it finds the best discount per item and sums across multiple items.
-        item_4 = create(:item, merchant: merchant)
+        item_4 = create(:item, merchant: merchant_2)
         invoice_item_2 = create(:invoice_item, quantity: 1, unit_price: 10000, item: item_4, invoice: invoice)
         invoice_item_3 = create(:invoice_item, quantity: 3, unit_price: 10000, item: item_4, invoice: invoice)
         expect(InvoiceItem.discounted_revenue_by_invoice(invoice)).to eq(145000)

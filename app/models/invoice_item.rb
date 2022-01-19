@@ -83,4 +83,8 @@ class InvoiceItem < ApplicationRecord
   def self.discounted_revenue_by_merchant_invoice(merchant, invoice)
     invoice.revenue_by_merchant(merchant) - self.revenue_discount_by_merchant_invoice(merchant, invoice)
   end
+
+  def self.discounted_revenue_by_invoice(invoice)
+    invoice.revenue - self.revenue_discount_by_invoice(invoice)
+  end
 end
