@@ -142,22 +142,23 @@ RSpec.describe 'merchants invoice show page' do
 
 
     visit "/merchants/#{merchant.id}/invoices/#{invoice.id}"
-    within "div.item_#{item_1}" do
-      expect(page).to have_content("Dicount Applied: None")
+    save_and_open_page
+    within "div.item_#{item_1.id}_info" do
+      expect(page).to have_content("Discount Applied: None")
     end
 
     visit "/merchants/#{merchant.id}/invoices/#{invoice.id}"
-    within "div.item_#{item_2}" do
-      expect(page).to have_content("Dicount Applied: #{discount_1.id}")
+    within "div.item_#{item_2.id}_info" do
+      expect(page).to have_content("Discount Applied: #{discount_1.id}")
       click_link "#{discount_1.id}"
-      expect(current_path).to eq(merchant_discount_path(discount_1))
+      expect(current_path).to eq("/merchants/#{merchant.id}/discounts/#{discount_1.id}")
     end
 
     visit "/merchants/#{merchant.id}/invoices/#{invoice.id}"
-    within "div.item_#{item_3}" do
-      expect(page).to have_content("Dicount Applied: #{discount_3.id}")
-      click_link "#{discount_3.id}"
-      expect(current_path).to eq(merchant_discount_path(discount_3))
+    within "div.item_#{item_3.id}_info" do
+      expect(page).to have_content("Discount Applied: #{discount_2.id}")
+      click_link "#{discount_2.id}"
+      expect(current_path).to eq("/merchants/#{merchant.id}/discounts/#{discount_2.id}")
     end
   end
 end
