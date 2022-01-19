@@ -142,7 +142,7 @@ RSpec.describe 'merchants invoice show page' do
 
 
     visit "/merchants/#{merchant.id}/invoices/#{invoice.id}"
-    save_and_open_page
+    
     within "div.item_#{item_1.id}_info" do
       expect(page).to have_content("Discount Applied: None")
     end
