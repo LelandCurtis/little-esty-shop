@@ -87,4 +87,20 @@ class InvoiceItem < ApplicationRecord
   def self.discounted_revenue_by_invoice(invoice)
     invoice.revenue - self.revenue_discount_by_invoice(invoice)
   end
+
+  def item_name
+    item.name
+  end
+
+  def item_id
+    item.id
+  end
+
+  def item_best_discount
+    item.best_discount
+  end
+
+  def item_best_discount_id
+    item_best_discount.id
+  end
 end

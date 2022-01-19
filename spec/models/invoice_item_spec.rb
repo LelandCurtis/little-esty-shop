@@ -338,5 +338,53 @@ RSpec.describe InvoiceItem, type: :model do
         expect(InvoiceItem.discounted_revenue_by_invoice(invoice)).to eq(163000)
       end
     end
+
+    describe '#item_name' do
+      it "returns the name of its item" do
+        item = create(:item, name: 'Bob')
+        invoice_item = create(:invoice_item, item: item)
+
+        expect(invoice_item.item_name).to eq("Bob")
+      end
+    end
+
+    describe '#item_id' do
+      it "returns the id of its item" do
+        item = create(:item, name: 'Bob')
+        invoice_item = create(:invoice_item, item: item)
+
+        expect(invoice_item.item_id).to eq(item.id)
+      end
+    end
+
+    describe '#item_best_discount' do
+      it "returns the best discount of its item" do
+        merchant = create(:merchant)
+        invoice = create(:invoice)
+        item_1 = create(:item, merchant: merchant)
+        invoice_item = create(:invoice_item, quantity: 4, unit_price: 10000, item: item_1, invoice: invoice)
+        transaction_1 = create(:transaction, invoice: invoice, result: 0)
+
+        discount_1 = create(:discount, merchant: merchant, quantity: 3, discount: 20)
+        discount_2 = create(:discount, merchant: merchant, quantity: 5, discount: 50)
+
+        expect(invoice_item.item_best_discount).to eq(discount_1)
+      end
+    end
+
+    describe '#item_best_discount_id' do
+      it "returns the id of the best discount of its item" do
+        merchant = create(:merchant)
+        invoice = create(:invoice)
+        item_1 = create(:item, merchant: merchant)
+        invoice_item = create(:invoice_item, quantity: 4, unit_price: 10000, item: item_1, invoice: invoice)
+        transaction_1 = create(:transaction, invoice: invoice, result: 0)
+
+        discount_1 = create(:discount, merchant: merchant, quantity: 3, discount: 20)
+        discount_2 = create(:discount, merchant: merchant, quantity: 5, discount: 50)
+
+        expect(invoice_item.item_best_discount_id).to eq(discount_1.id)
+      end
+    end
   end
 end
